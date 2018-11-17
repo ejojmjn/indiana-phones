@@ -1,0 +1,11 @@
+[Unit]
+Description=Bluetooth Agent for Indiana-Phones
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=python3 -u /home/pi/indiana-bluez/main.py
+
+[Install]
+WantedBy=multi-user.target
+

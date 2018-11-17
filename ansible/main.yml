@@ -1,0 +1,39 @@
+---
+- hosts: localhost
+  vars:
+
+  tasks:
+
+  - name: Update APT cache
+    apt:
+      update_cache: yes
+    become: yes
+
+  - name: Install Mosquitto MQTT broker (https://mosquitto.org)
+    apt:
+      name: "{{ packages }}"
+    vars:
+      packages:
+        - mosquitto
+        - mosquitto-clients
+    become: yes
+
+  - name: Install bluetooth
+    apt:
+      name: bluetooth
+    become: yes
+
+  - name: Install oFono (https://01.org/ofono)
+    apt:
+      name: ofono
+    become: yes
+
+  - name: indiana-bluez | Create Unit file
+    template: src=indiana-bluez.service.j2 dest=/lib/systemd/system/indiana-bluez.service mode=644
+    notify:
+      - reload systemctl
+    become: yes
+
+  - name: indiana-bluez | Start indiana-bluez
+    service: name=indiana-bluez.service state=started enabled=yes
+    become: yes
