@@ -1,0 +1,86 @@
+<!doctype html>
+<title>Hello from Flask</title>
+<head>
+<meta name="viewport" content="width=device-width">
+<style>
+div {
+  width: 200px;
+}
+ 
+h2 {
+  font: 400 25px/1.5 Helvetica, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+ 
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+ 
+li {
+  font: 200 10px/1.5 Helvetica, Verdana, sans-serif;
+  border-bottom: 1px solid #ccc;
+}
+ 
+li:last-child {
+  border: none;
+}
+ 
+li a {
+  text-decoration: none;
+  color: #000;
+  display: block;
+  width: 200px;
+ 
+  -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -o-transition: font-size 0.3s ease, background-color 0.3s ease;
+  -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
+  transition: font-size 0.3s ease, background-color 0.3s ease;
+}
+ 
+li a:hover {
+  font-size: 15px;
+  background: #f6f6f6;
+}
+</style>
+
+<script>
+function magic(a) {
+  form = a.parentNode;
+  var input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'password';
+  input.value = prompt('Enter password for {{n}}:');
+  form.appendChild(input);
+  form.submit();
+}
+</script>
+
+<div>
+ <h2>Choose:</h2>
+<ul>
+{% for n in networks %}
+<li>
+  <a href="connect/{{ n }}" onclick="return prompt('Enter password for {{n}}:')">{{n}}</a></li>
+{% endfor %}
+</ul>
+</div>
+
+
+<div>
+ <h2>HiFi WiFi</h2>
+<ul>
+{% for n in networks %}
+<li>   
+  <form action="connect/{{ n }}" method="post">
+    <a href="javascript:;" id="{{ n }}" onclick="magic(this)">{{n}}</a>
+  </form>
+</li>
+{% endfor %}
+</ul>
+</div>
+
+

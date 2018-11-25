@@ -1,0 +1,49 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  vars:
+
+  tasks:
+
+  - debug: { msg: "{{ ansible_architecture }} " }
+  - debug: { msg: "{{ ansible_os_family }} " }
+
+  - name: Add InfluxDB repo 
+    apt_repository:
+      repo: deb https://repos.influxdata.com/debian scratch stable
+      state: present
+    become: yes
+
+  - name: Update APT cache
+    apt:
+      update_cache: yes
+    become: yes
+
+  - name: Install InfluxDB and Telegraph on x86_64
+    block:
+      - name: Download and install InfluxDB from .deb
+        apt:
+          deb: https://dl.influxdata.com/influxdb/releases/influxdb_1.7.1_amd64.deb
+        environment:
+          RUNLEVEL: 1
+      - name: Download and install Telegraph from .deb
+        apt:
+          deb: https://dl.influxdata.com/telegraf/releases/telegraf_1.9.0-1_amd64.deb
+        environment:
+          RUNLEVEL: 1
+    when: ansible_architecture == "x86_64"
+    become: yes
+
+    block:
+      - name: Install Telegraph for ARM from tarball
+        unarchive:
+          src: https://dl.influxdata.com/influxdb/releases/influxdb-1.7.1_linux_armhf.tar.gz
+          dest: /
+          remote_src: yes
+      - name: Install Telegraph for ARM from tarball
+        unarchive:
+          src: https://dl.influxdata.com/telegraf/releases/telegraf-1.9.0_linux_armhf.tar.gz
+          dest: /
+          remote_src: yes
+    when: ansible_architecture == "armv7l"
+    become: yes
