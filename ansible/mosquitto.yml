@@ -1,0 +1,22 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  become: yes
+  vars:
+
+  tasks:
+
+  - debug: { msg: "{{ ansible_architecture }} " }
+  - debug: { msg: "{{ ansible_os_family }} " }
+
+  - name: Update APT cache
+    apt:
+      update_cache: yes
+
+  - name: Install Mosquitto MQTT broker (https://mosquitto.org)
+    apt:
+      name: "{{ packages }}"
+    vars:
+      packages:
+        - mosquitto
+        - mosquitto-clients

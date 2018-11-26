@@ -1,0 +1,43 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  become: yes
+  vars:
+
+  tasks:
+
+  - debug: { msg: "{{ ansible_architecture }} " }
+  - debug: { msg: "{{ ansible_os_family }} " }
+
+  - name: Update APT cache
+    apt:
+      update_cache: yes
+
+  - name: Install pre-reqs for pydbus
+    apt:
+      name: "{{ packages }}"
+    vars:
+      packages:
+        - libgirepository1.0-dev
+        - libcairo2-dev
+
+  - pip:
+      requirements: requirements.txt
+
+
+  - name: Install bluetooth
+    apt:
+      name: bluetooth
+
+  - name: Install oFono (https://01.org/ofono)
+    apt:
+      name: ofono
+
+  - name: indiana-bluez | Create Unit file
+    template: src=indiana-bluez.service.j2 dest=/lib/systemd/system/indiana-bluez.service mode=644
+    notify:
+      - reload systemctl
+
+  - name: indiana-bluez | Start indiana-bluez
+    service: name=indiana-bluez.service state=started enabled=yes
+    become: yes
