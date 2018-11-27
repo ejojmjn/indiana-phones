@@ -6,8 +6,8 @@
 
   tasks:
 
-  - debug: { msg: "{{ ansible_architecture }} " }
-  - debug: { msg: "{{ ansible_os_family }} " }
+  - debug: { msg: "{{ ansible_architecture }}" }
+  - debug: { msg: "{{ ansible_os_family }}" }
 
   - name: Update APT cache
     apt:
@@ -18,7 +18,7 @@
       name: "{{ packages }}"
     vars:
       packages:
-        - libgirepository1.0-dev
+        - libgirepository1.0-dev 
         - libcairo2-dev
 
   - name: Clone https://github.com/ejojmjn/indiana-bluez.git

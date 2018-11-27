@@ -6,17 +6,25 @@
 
   tasks:
 
-  - debug: { msg: "{{ ansible_architecture }} " }
-  - debug: { msg: "{{ ansible_os_family }} " }
+  - debug: { msg: "{{ ansible_architecture }}" }
+  - debug: { msg: "{{ ansible_os_family }}" }
 
   - name: Update APT cache
     apt:
       update_cache: yes
 
-  - name: Install Mosquitto MQTT broker (https://mosquitto.org)
+  - name: Install Mosquitto MQTT broker and its clients (https://mosquitto.org)
     apt:
       name: "{{ packages }}"
     vars:
       packages:
         - mosquitto
         - mosquitto-clients
+    environment:
+      RUNLEVEL: 1
+
+  - name: Start Mosquitto MQTT service
+    service: 
+      name: mosquitto
+      state: started
+      enabled: yes
