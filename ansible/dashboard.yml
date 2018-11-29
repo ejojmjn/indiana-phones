@@ -19,7 +19,7 @@
         apt_key:
           url: https://repos.influxdata.com/influxdb.key
           state: present      
-      - name: Add InfluxDB repo (https://repos.influxdata.com/influxdb.key)
+      - name: Add InfluxDB repo (deb https://repos.influxdata.com/debian stretch stable)
         apt_repository:
           repo: deb https://repos.influxdata.com/debian stretch stable
           state: present
@@ -52,13 +52,41 @@
           daemon_reload: yes
           enabled: yes
 
-  - name: Install Telegraph telemetry agent
+  - name: Install Telegraf telemetry agent
     block:
-      - name: Install Telegraph from .deb
+      - name: get the rpm package facts
+        package_facts:
+          manager: "auto"
+
+      - name: Add apt key (https://repos.influxdata.com/influxdb.key)
+        apt_key:
+          url: https://repos.influxdata.com/influxdb.key
+          state: present      
+      - name: Add InfluxDB repo (https://repos.influxdata.com/influxdb.key)
+        apt_repository:
+          repo: deb https://repos.influxdata.com/debian stretch stable
+          state: present
+          update_cache: yes
+      - name: Install Telegraf
         apt:
-          deb: https://dl.influxdata.com/telegraf/releases/telegraf_1.9.0-1_amd64.deb
+          name: telegraf
         environment:
           RUNLEVEL: 1
+        when: "'telegraf:amd64' not in ansible_facts.packages"
+
+      - name: Configure Telegraf to use Unix sockets
+        lineinfile:
+          path: /etc/telegraf/telegraf.conf
+          regexp: '^.*var/run/influxdb.sock'
+          line: 'urls = ["unix:///var/run/influxdb.sock"]'
+
+      - name: Start InfluxDB service
+        systemd: 
+          name: telegraf
+          state: restarted
+          daemon_reload: yes
+          enabled: yes
+
       - name: Install Telegraph for ARM from tarball
         unarchive:
           src: https://dl.influxdata.com/influxdb/releases/influxdb-1.7.1_linux_armhf.tar.gz
@@ -66,3 +94,26 @@
           remote_src: yes
           extra_opts: [--strip-components=1]
         when: ansible_architecture == "armv7l"
+
+  - name: Install Grafana
+    block:
+      - name: Add apt key (https://packagecloud.io/gpg.key)
+        apt_key:
+          url: https://packagecloud.io/gpg.key
+          state: present      
+      - name: Add Grafana repo (deb https://packagecloud.io/grafana/stable/debian stretch main)
+        apt_repository:
+          repo: deb https://packagecloud.io/grafana/stable/debian stretch main
+          state: present
+          update_cache: yes
+      - name: Install Grafana
+        apt:
+          name: grafana:amd64
+          force: yes
+          allow_unauthenticated: yes
+      - name: Start Grafana
+        systemd: 
+          name: grafana-server
+          state: restarted
+          daemon_reload: yes
+          enabled: yes
