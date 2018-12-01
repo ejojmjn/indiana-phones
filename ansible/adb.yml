@@ -20,7 +20,7 @@
         - libssl-dev 
         - swig
 
-  - name: Install android-tools-adb for building an .android/adbkey
+  - name: Install android-tools-adb for building an .android/adbkey (run adb devices)
     apt:
       name: android-tools-adb
 
