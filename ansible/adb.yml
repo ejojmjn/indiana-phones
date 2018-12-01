@@ -1,0 +1,42 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  become: yes
+  vars:
+
+  tasks:
+
+  - debug: { msg: "{{ ansible_os_family }}" }
+
+  - name: Update APT cache
+    apt:
+      update_cache: yes
+
+  - name: Install requirements for ADB/libusb1
+    apt:
+      name: "{{ packages }}"
+    vars:
+      packages:
+        - libssl-dev 
+        - swig
+
+  - name: Install android-tools-adb for building an .android/adbkey
+    apt:
+      name: android-tools-adb
+
+  - name: Install python libraries with pip
+    pip:
+      executable: pip3
+      name:
+        - adb
+        - libusb1
+        - M2Crypto
+
+#  - name: Clone https://github.com/ejojmjn/indiana-bluez.git
+#    git:
+#      repo: https://github.com/ejojmjn/indiana-bluez.git
+#      dest: indiana-bluez
+#  - name: Install requirements for indiana-bluez
+#    pip:
+#      requirements: /home/pi/indiana-bluez/requirements.txt
+#
