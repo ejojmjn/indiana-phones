@@ -3,11 +3,17 @@
   connection: local
   become: yes
   vars:
-
+    bluetooth_name: "avc"
   tasks:
 
   - debug: { msg: "{{ ansible_architecture }}" }
   - debug: { msg: "{{ ansible_os_family }}" }
+
+  - name: Create a file
+    copy: 
+      content: PRETTY_HOSTNAME={{ bluetooth_name }}
+      dest: /etc/machine-info
+
 
   - name: Update APT cache
     apt:
